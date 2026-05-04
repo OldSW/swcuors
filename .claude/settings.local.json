@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ilspycmd cuoapi.dll)",
+      "Bash(monodis cuoapi.dll)",
+      "Bash(monodis /Users/jensschulze/workspace/classicuo/external/cuoapi/cuoapi.dll)",
+      "Bash(cargo build *)",
+      "Bash(nm -gU /Users/jensschulze/workspace/swcuors/target/release/libswcuors.dylib)",
+      "Bash(awk '/class.*OnPacketSendRecv\\\\b/{found=1} found{print} /end of class.*OnPacketSendRecv/{found=0}')"
+    ]
+  }
+}
