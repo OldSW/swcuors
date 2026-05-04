@@ -1,5 +1,7 @@
 use std::ffi::{c_char, c_int, c_void};
 
+mod typing_indicator;
+
 // ---------------------------------------------------------------------------
 // SDL3 event types — mirrors SDL3's C structs (SDL3.Core.cs bindings).
 // SDL_Event is a union padded to 128 bytes; all variants start at offset 0.
@@ -317,6 +319,8 @@ impl PluginState {
 }
 
 static mut STATE: PluginState = PluginState::new();
+static TYPING_INDICATOR: std::sync::Mutex<typing_indicator::TypingIndicator> =
+    std::sync::Mutex::new(typing_indicator::TypingIndicator::new());
 
 /// Reinterpret a raw `*mut c_void` as a typed function pointer.
 /// Returns `None` for null pointers.
@@ -473,29 +477,9 @@ unsafe extern "C" fn on_wnd_proc(ev: *mut sdl3::SDL_Event) -> c_int {
     }
     let event_type = unsafe { (*ev).event_type };
     match event_type {
-        sdl3::SDL_EVENT_KEY_DOWN | sdl3::SDL_EVENT_KEY_UP => {
-            let _key = unsafe { (*ev).key };
-            // _key.scancode, _key.key, _key.mod_, _key.down
+        sdl3::SDL_EVENT_KEY_UP => {
+            TYPING_INDICATOR.lock().unwrap().update();
         }
-        sdl3::SDL_EVENT_MOUSE_BUTTON_DOWN | sdl3::SDL_EVENT_MOUSE_BUTTON_UP => {
-            let _btn = unsafe { (*ev).button };
-            // _btn.button, _btn.down, _btn.x, _btn.y
-        }
-        sdl3::SDL_EVENT_MOUSE_MOTION => {
-            let _motion = unsafe { (*ev).motion };
-            // _motion.x, _motion.y, _motion.xrel, _motion.yrel
-        }
-        sdl3::SDL_EVENT_MOUSE_WHEEL => {
-            let _wheel = unsafe { (*ev).wheel };
-            // _wheel.x, _wheel.y
-        }
-        sdl3::SDL_EVENT_WINDOW_FOCUS_GAINED
-        | sdl3::SDL_EVENT_WINDOW_FOCUS_LOST
-        | sdl3::SDL_EVENT_WINDOW_RESIZED => {
-            let _win = unsafe { (*ev).window };
-            // _win.window_id, _win.data1, _win.data2
-        }
-        sdl3::SDL_EVENT_QUIT => {}
         _ => {}
     }
     0 // pass event through to CUO
