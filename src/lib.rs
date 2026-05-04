@@ -135,9 +135,12 @@ pub mod sdl3 {
     pub const SDL_EVENT_MOUSE_BUTTON_UP:         u32 = 1026;
     pub const SDL_EVENT_MOUSE_WHEEL:             u32 = 1027;
 
+    // SDL_Scancode range for letter keys A–Z.
+    pub const SDL_SCANCODE_A: u32 = 4;
+    pub const SDL_SCANCODE_Z: u32 = 29;
     // SDL_Scancode values for Enter keys (physical key position, layout-independent).
-    pub const SDL_SCANCODE_RETURN:    u32 = 40;
-    pub const SDL_SCANCODE_KP_ENTER:  u32 = 88;
+    pub const SDL_SCANCODE_RETURN:   u32 = 40;
+    pub const SDL_SCANCODE_KP_ENTER: u32 = 88;
 
     /// SDL3 event union. Always 128 bytes; read `event_type` first to
     /// determine which variant is active, then access that field.
@@ -483,8 +486,10 @@ unsafe extern "C" fn on_wnd_proc(ev: *mut sdl3::SDL_Event) -> c_int {
     match event_type {
         sdl3::SDL_EVENT_KEY_UP => {
             let scancode = unsafe { (*ev).key.scancode };
-            if scancode != sdl3::SDL_SCANCODE_RETURN && scancode != sdl3::SDL_SCANCODE_KP_ENTER {
+            if scancode >= sdl3::SDL_SCANCODE_A && scancode <= sdl3::SDL_SCANCODE_Z {
                 TYPING_INDICATOR.lock().unwrap().update();
+            } else if scancode == sdl3::SDL_SCANCODE_RETURN || scancode == sdl3::SDL_SCANCODE_KP_ENTER {
+                TYPING_INDICATOR.lock().unwrap().reset();
             }
         }
         _ => {}

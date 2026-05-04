@@ -14,6 +14,11 @@ impl TypingIndicator {
         Self { last_packet: None, count: 0 }
     }
 
+    pub fn reset(&mut self) {
+        self.count = 0;
+        self.last_packet = None;
+    }
+
     /// Call on every SDL_EVENT_KEY_UP.
     pub fn update(&mut self) {
         let elapsed_past_delay = match self.last_packet {
