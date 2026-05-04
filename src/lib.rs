@@ -135,6 +135,10 @@ pub mod sdl3 {
     pub const SDL_EVENT_MOUSE_BUTTON_UP:         u32 = 1026;
     pub const SDL_EVENT_MOUSE_WHEEL:             u32 = 1027;
 
+    // SDL_Scancode values for Enter keys (physical key position, layout-independent).
+    pub const SDL_SCANCODE_RETURN:    u32 = 40;
+    pub const SDL_SCANCODE_KP_ENTER:  u32 = 88;
+
     /// SDL3 event union. Always 128 bytes; read `event_type` first to
     /// determine which variant is active, then access that field.
     #[repr(C)]
@@ -478,7 +482,10 @@ unsafe extern "C" fn on_wnd_proc(ev: *mut sdl3::SDL_Event) -> c_int {
     let event_type = unsafe { (*ev).event_type };
     match event_type {
         sdl3::SDL_EVENT_KEY_UP => {
-            TYPING_INDICATOR.lock().unwrap().update();
+            let scancode = unsafe { (*ev).key.scancode };
+            if scancode != sdl3::SDL_SCANCODE_RETURN && scancode != sdl3::SDL_SCANCODE_KP_ENTER {
+                TYPING_INDICATOR.lock().unwrap().update();
+            }
         }
         _ => {}
     }
@@ -522,17 +529,17 @@ unsafe extern "C" fn Install(header: *mut PluginHeader) {
 
     // Register plugin callbacks.
     h.on_initialize              = on_initialize              as *mut c_void;
-    h.on_connected               = on_connected               as *mut c_void;
-    h.on_disconnected            = on_disconnected            as *mut c_void;
-    h.on_client_closing          = on_client_closing          as *mut c_void;
-    h.on_focus_gained            = on_focus_gained            as *mut c_void;
-    h.on_focus_lost              = on_focus_lost              as *mut c_void;
-    h.tick                       = on_tick                    as *mut c_void;
-    h.on_hotkey_pressed          = on_hotkey_pressed          as *mut c_void;
-    h.on_mouse                   = on_mouse                   as *mut c_void;
-    h.on_player_position_changed = on_player_position_changed as *mut c_void;
-    h.on_recv_new                = on_recv_new                as *mut c_void;
-    h.on_send_new                = on_send_new                as *mut c_void;
+    // h.on_connected               = on_connected               as *mut c_void;
+    // h.on_disconnected            = on_disconnected            as *mut c_void;
+    // h.on_client_closing          = on_client_closing          as *mut c_void;
+    // h.on_focus_gained            = on_focus_gained            as *mut c_void;
+    // h.on_focus_lost              = on_focus_lost              as *mut c_void;
+    // h.tick                       = on_tick                    as *mut c_void;
+    // h.on_hotkey_pressed          = on_hotkey_pressed          as *mut c_void;
+    // h.on_mouse                   = on_mouse                   as *mut c_void;
+    // h.on_player_position_changed = on_player_position_changed as *mut c_void;
+    // h.on_recv_new                = on_recv_new                as *mut c_void;
+    // h.on_send_new                = on_send_new                as *mut c_void;
     h.on_wnd_proc                = on_wnd_proc                as *mut c_void;
 
     eprintln!("[swcuors] Install ok (client_version={})", h.client_version);
