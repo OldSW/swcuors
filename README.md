@@ -5,6 +5,7 @@ ClassicUO plugin for the Freeshard [Schattenwelt](https://alte-schattenwelt.de)
 ## Features
 
 - Typing Indicator
+
   Sends a speech packet with text `[typing]` to the server. This will be filtered out server side and replaced with some effect animation. E.g:
 
   ```
