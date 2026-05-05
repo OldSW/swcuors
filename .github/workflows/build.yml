@@ -10,7 +10,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu
+          - os: ubuntu-latest
             artifact: libswcuors.so
           - os: windows-latest
             artifact: swcuors.dll
