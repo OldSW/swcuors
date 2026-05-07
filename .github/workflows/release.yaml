@@ -1,8 +1,12 @@
-name: Build
+name: Release
 
 on:
   push:
-  pull_request:
+    tags:
+      - '*.*.*'
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -41,7 +45,26 @@ jobs:
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
-        if: github.event_name == 'pull_request'
         with:
           name: swcuoplugin-${{ runner.os }}
           path: target/release/${{ matrix.artifact }}
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    name: Release
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: swcuoplugin
+          merge-multiple: true
+
+      - name: Zip artifacts
+        run: zip -r swcuoplugin-${{ github.ref_name }}.zip swcuoplugin/
+
+      - name: Upload to GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: swcuoplugin-${{ github.ref_name }}.zip
