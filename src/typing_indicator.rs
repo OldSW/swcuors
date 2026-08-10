@@ -39,7 +39,7 @@ impl TypingIndicator {
     fn send_typing_packet() {
 
         // headerSize = 4
-        let header_size: usize = 4;
+        let header_size: usize = 5;
         let total_length = header_size;
 
         let mut packet = vec![0u8; total_length];
@@ -48,7 +48,7 @@ impl TypingIndicator {
         packet[i] = 0xBF;                            i += 1; // packet id
         packet[i] = (total_length >> 8) as u8;       i += 1; // length high
         packet[i] = (total_length & 0xFF) as u8;     i += 1; // length low
-        packet[i] = 0xEF;                                    // subcommand
+        packet[i] = 0x00; packet[i + 1] = 0xEF;              // subcommand
 
         crate::inject_to_server(&mut packet);
     }
