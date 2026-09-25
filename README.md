@@ -1,4 +1,4 @@
-> [!NOTE]
+> [!IMPORTANT]
 > I decided to archive this repository. I was never familiar with Rust, but used it as a vehicle to get this plugin working.
 > With [SWCUOPlugin](https://github.com/OldSW/SWCUOPlugin) I have now a working plugin written in C# as replacement.
 
